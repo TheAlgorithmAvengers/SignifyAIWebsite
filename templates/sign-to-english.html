@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<title>Signify AI</title>
+<style>
+  :root {
+    --bg-top:#f3efe7;
+    --bg-bottom:#d9e1e7;
+    --header-bg:#243746;
+    --header-accent:#385364;
+    --card-bg:rgba(255,255,255,0.94);
+    --card-border:rgba(36,55,70,0.1);
+    --text-main:#22313d;
+    --text-muted:#5f6d78;
+    --primary:#315c72;
+    --primary-hover:#284b5d;
+    --field-border:#a7b2ba;
+    --menu-bg:rgba(255,255,255,0.1);
+    --menu-hover:rgba(255,255,255,0.16);
+  }
+  body { font-family: Arial, sans-serif; margin:0; color:var(--text-main); background:linear-gradient(160deg,var(--bg-top),var(--bg-bottom)); }
+  header { background:linear-gradient(135deg,var(--header-bg),var(--header-accent)); color:#fff; padding:18px 16px; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 14px 30px rgba(17,27,38,0.18); }
+  .container { background:var(--card-bg); margin:24px auto; padding:28px; width:92%; max-width:700px; border-radius:18px; text-align:center; box-shadow:0 18px 36px rgba(30,42,54,0.12); border:1px solid var(--card-border); }
+  textarea { width:100%; height:120px; border-radius:14px; padding:12px; border:1px solid var(--field-border); background:#f8fafb; color:var(--text-main); box-sizing:border-box; }
+  .controls { display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; margin:18px 0 12px; }
+  .mode-label { font-weight:bold; color:var(--text-main); }
+  select { padding:10px 14px; border-radius:999px; border:1px solid var(--field-border); background:#f8fafb; color:var(--text-main); font-weight:bold; }
+  .status-text { font-size:14px; color:var(--text-muted); margin:10px 0 18px; }
+  .btn { margin-top:16px; padding:12px 20px; border:none; border-radius:999px; background:var(--primary); color:#fff; font-weight:bold; cursor:pointer; transition:background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; box-shadow:0 10px 20px rgba(31,52,71,0.12); }
+  .btn:hover { background:var(--primary-hover); transform:translateY(-1px); }
+  img { height:40px; }
+  a { text-decoration: none; }
+  .navbar { width:100%; max-width:1100px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:bold; color:#fff; }
+  .menu-bar { display:flex; align-items:center; justify-content:center; gap:10px; padding:8px; border-radius:999px; background:var(--menu-bg); backdrop-filter:blur(6px); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); flex-wrap:wrap; }
+  .menu-bar a { color:#fff; font-weight:bold; font-size:14px; padding:10px 18px; border-radius:999px; transition:background 0.2s ease, transform 0.2s ease; }
+  .menu-bar a:hover { background:var(--menu-hover); transform:translateY(-1px); }
+  .menu-bar a.active { background:#f3f6f8; color:var(--header-bg); box-shadow:0 6px 14px rgba(17,27,38,0.16); }
+  h2 { color:#22384c; margin-top:0; }
+  p { color:var(--text-muted); line-height:1.65; }
+  @media (max-width: 720px) {
+    .navbar { justify-content:center; }
+    .brand { width:100%; justify-content:center; }
+    .menu-bar { width:100%; border-radius:20px; }
+    .menu-bar a { flex:1 1 140px; text-align:center; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+      <span>Signify AI</span>
+    </div>
+    <div class="menu-bar">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('sign_to_english') }}" class="active">Sign to English</a>
+      <a href="{{ url_for('english_to_sign') }}">English to Sign</a>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  <h2>Sign Language to English Translation</h2>
+  <video id="video" width="480" height="360" autoplay></video>
+  <div class="controls">
+    <label class="mode-label" for="predictionMode">Prediction Mode</label>
+    <select id="predictionMode">
+      <option value="buffered" selected>Buffered</option>
+      <option value="instant">Instant</option>
+    </select>
+  </div>
+  <p class="status-text" id="predictionStatus">Buffered mode uses recent predictions for a more stable result.</p>
+  <textarea id="sentenceOutput" placeholder="Detected text will appear here..." readonly></textarea>
+</div>
+
+<canvas id="canvas" width="480" height="360" style="display:none;"></canvas>
+
+</body>
+<script src="{{ url_for('static', filename='sign-to-english.js') }}"></script>
+</html>
